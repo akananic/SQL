@@ -1,0 +1,31 @@
+-- I first obtained the data from Kaggle and then created a table which could be used to import the data into SQLite --
+-- After importing the data into the table I created, I began to analyze the data --
+-- Below are descriptions of what information I queried for and the commands I used to query the data --
+
+
+-- selected the first 20 rows of data to get a sense of what the data in the table looked like --
+SELECT * FROM BIT_DB.Spotifydata LIMIT 20;
+
+-- counted how many times artists appeared in the Top 50 and ordered the list by descending order --
+SELECT artist_name, COUNT(*) FROM BIT_DB.Spotifydata
+GROUP BY artist_name
+ORDER BY COUNT(*) DESC;
+
+-- selected all information in the table for artists named Olivia Rodrigo --
+SELECT * FROM BIT_DB.Spotifydata
+WHERE artist_name = 'Olivia Rodrigo';
+
+-- selected the name of artists, their track names, and the popularity rating of their track for all artists whose track had a popularity score above 90 --
+SELECT artist_name, track_name, popularity FROM BIT_DB.Spotifydata
+WHERE popularity > 90
+ORDER BY popularity DESC;
+
+-- calculated the average popularity and energy scores for all artists in the Top 50. Ordered results by most energetic to least energetic --
+SELECT artist_name, AVG(popularity), AVG(energy)
+FROM BIT_DB.Spotifydata
+GROUP BY artist_name
+ORDER BY AVG(energy) DESC;
+
+-- calculated the range of popularity scores in the table --
+SELECT MIN(popularity), MAX(popularity)
+FROM BIT_DB.Spotifydata;
