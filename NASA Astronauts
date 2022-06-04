@@ -1,0 +1,78 @@
+-- The following queries analyze data related to NASA astronauts and their mission trips (data was obtained from Khan Academy and queries were made using Khan Academy's SQL platform)--
+
+--How many men and women were NASA astronauts?--
+SELECT COUNT(gender) FROM astronauts GROUP BY gender;
+
+SELECT COUNT(gender) FROM astronauts WHERE gender = 'Male';
+
+SELECT COUNT(gender) FROM astronauts WHERE gender <> 'Male';
+
+-- How many people became NASA astronauts in 1998 or later?--
+SELECT COUNT(*) FROM astronauts WHERE Year >= 1998;
+
+--How many females became NASA astronauts in 1998 or later?--
+SELECT COUNT(*) FROM astronauts WHERE Year >= 1998 AND gender LIKE "Female";
+
+-- Query the different statuses of astronauts and count how many there of astronauts in each status--
+SELECT COUNT(Status), Status FROM astronauts GROUP BY Status;
+
+--Who has done the greatest number of space walks, and how many walks have they done?--
+SELECT Name, Space_Walks FROM astronauts WHERE Space_Walks IN
+    (SELECT MAX(Space_Walks) FROM astronauts);
+    
+-- Find the averages for the following variables: space walks, space flights, and hours flying in space--
+SELECT AVG(Space_Walks), AVG(Space_Flights), AVG(Space_Flight_hr) FROM astronauts;
+
+-- Find the average number of space walks, space flights, and hours spent flying in space for male astronauts. Repeat for female astronauts.--
+SELECT AVG(Space_Walks), AVG(Space_Flights), AVG(Space_Flight_hr) FROM astronauts WHERE gender = 'Male';
+
+SELECT AVG(Space_Walks), AVG(Space_Flights), AVG(Space_Flight_hr) FROM astronauts WHERE gender = 'Female';
+
+-- What are the names of the female astronauts who have not done any space walks? What are the names of the male astronauts? --
+SELECT distinct Name, Space_Walks FROM astronauts WHERE Space_Walks = 0 AND gender = 'Female';
+
+SELECT distinct Name, Space_Walks FROM astronauts WHERE Space_Walks = 0 AND gender = 'Male';
+
+-- What are the names of the male and female astronauts that currently hold the record for greatest number of space walks done, and how many walks have they done? --
+SELECT distinct Name, Space_Walks FROM astronauts WHERE Space_Walks IN
+    (SELECT MAX(Space_Walks) FROM astronauts WHERE gender = 'Male');
+
+SELECT distinct Name, Space_Walks FROM astronauts WHERE gender != 'Male' AND Space_Walks IN
+    (SELECT MAX(Space_Walks) FROM astronauts WHERE gender = 'Female');
+
+-- What are the names, date of death, and the name of the death mission of astronauts that died during space missions? Exclude death missions that are NULL. -- 
+SELECT Name, Death_Date, Death_Mission FROM astronauts WHERE Death_Mission NOT NULL; 
+
+-- How many astronauts in total died during space missions, exclude death missions that are NULL. --
+SELECT COUNT(Death_Mission) FROM astronauts WHERE Death_Mission NOT NULL;
+
+-- Count how many female astronauts there were that were also captains in the military (include all branches). --
+SELECT COUNT(*) AS Female_Captains FROM astronauts WHERE Military_Rank = "Captain" AND gender = "Female";
+
+-- Query all information in the astronaut table that pertain to female astronauts that are also captains in the military. --
+SELECT * FROM astronauts WHERE Military_Rank = "Captain" AND gender = "Female";
+
+-- Count how many male astronauts there were that were also captains in the military (include all branches). --
+SELECT COUNT(*) FROM astronauts WHERE Military_Rank = "Captain" AND gender = "Male";
+
+-- What are the total number of space flights, space flight hours, and space walks completed for ALL astronauts? --
+SELECT SUM(Space_Flights), SUM(Space_Flight_hr), SUM(Space_Walks) FROM astronauts; 
+
+-- Query the names, military rankings, and military branch affiliations of all astronauts. --
+SELECT Name, Military_Rank, Military_Branch FROM astronauts; 
+
+-- How many astronauts were there from each military branch? --
+SELECT COUNT(Name), Military_Branch FROM astronauts GROUP BY Military_Branch; 
+
+-- Query the astronauts' names and genders for all astronauts that are in the Marine Corps or Air Force. --
+SELECT Name, Gender, Status, Military_Branch FROM astronauts WHERE Military_Branch = 'US Marine Corps' OR Military_Branch = 'US Air Force' ORDER BY Status;
+
+-- Group astronauts into 3 different groups based on the number of space flights they have done (above average, average, below average) and then count how many astronauts there are in each group. --
+SELECT COUNT(*),
+    CASE
+        WHEN Space_Walks > 4 THEN "Above Average"
+        WHEN Space_Walks > 2 THEN "Average"
+        ELSE "Below Average"
+    END AS Average_Walks
+FROM astronauts
+GROUP BY Average_Walks;
