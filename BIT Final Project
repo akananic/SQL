@@ -1,0 +1,142 @@
+--Hello and welcome. Below you will find a series of queries I used to analyze data and pull information from various tables in fulfillment of Charlotte Chaze's Break Into Tech final project. This project demonstrates my aptitude and knowledge of SQL and SQL querying.--
+
+--Show Customers (their full names, customer ID, and country) who are not in the US.--
+SELECT FirstName, LastName, CustomerID, Country
+FROM customers
+WHERE country != "USA"; 
+
+--Show only the Customers from Brazil.--
+SELECT * FROM customers
+WHERE country = "Brazil"; 
+
+--Find the Invoices of customers who are from Brazil. The resulting table should show the customer's full name, Invoice ID, Date of the invoice, and billing country.--
+SELECT customers.FirstName, customers.LastName, invoices.InvoiceId, invoices.InvoiceDate, invoices.BillingCountry
+FROM customers
+LEFT JOIN invoices ON customers.CustomerId = invoices.CustomerId
+WHERE BillingCountry = 'Brazil';
+
+--Show the Employees who are Sales Support Agents.--
+SELECT * FROM employees
+WHERE Title = 'Sales Support Agent';
+
+--Find a unique/distinct list of billing countries from the Invoice table.--
+SELECT distinct BillingCountry FROM invoices;
+
+--Provide a query that shows the invoices associated with each sales agent. The resulting table should include the Sales Agent's full name.--
+SELECT employees.FirstName, employees.LastName, invoices.InvoiceId
+FROM employees
+LEFT JOIN customers ON employees.EmployeeId = customers.SupportRepId
+LEFT JOIN invoices ON customers.CustomerId = invoices.CustomerId;
+
+--Show the Invoice Total, Customer name, Country, and Sales Agent name for all invoices and customers.--
+SELECT invoices.Total, customers.FirstName, customers.LastName, customers.Country, employees.FirstName, employees.LastName
+FROM invoices
+JOIN customers ON invoices.CustomerId = customers.CustomerId
+JOIN employees ON customers.SupportRepId = employees.EmployeeId;
+
+--How many Invoices were there in 2009?--
+SELECT COUNT(*) FROM invoices
+WHERE InvoiceDate BETWEEN '2009-01-01' AND '2009-12-31';
+
+--What are the total sales for 2009?--
+SELECT SUM(Total) FROM invoices
+WHERE InvoiceDate BETWEEN '2009-01-01' AND '2009-12-31';
+
+--Write a query that includes the purchased track name with each invoice line item.--
+SELECT invoice_items.InvoiceLineId, tracks.Name
+FROM invoice_items
+LEFT JOIN tracks ON invoice_items.TrackId = tracks.TrackId;
+
+--Write a query that includes the purchased track name AND artist name with each invoice line item.--
+SELECT invoice_items.InvoiceLineId, tracks.Name, artists.Name
+FROM artists
+LEFT JOIN albums ON artists.ArtistId = albums.ArtistId
+LEFT JOIN tracks ON albums.AlbumId = tracks.AlbumId
+LEFT JOIN invoice_items ON tracks.TrackId = invoice_items.TrackId; 
+
+--Write a query that includes the purchased track name AND artist name with each invoice line item.--
+SELECT invoice_items.InvoiceLineId, tracks.Name, artists.Name
+FROM artists
+FULL JOIN albums ON artists.ArtistId = albums.ArtistId
+FULL JOIN tracks ON albums.AlbumId = tracks.AlbumId
+FULL JOIN invoice_items ON tracks.TrackId = invoice_items.TrackId; 
+
+--Provide a query that shows all the Tracks, and include the Album name, Media type, and Genre.--
+SELECT tracks.Name AS track_name, albums.Title AS album, media_types.Name AS media_types, genres.Name AS genre
+FROM albums
+LEFT JOIN tracks ON tracks.AlbumId = albums.AlbumId
+LEFT JOIN media_types ON tracks.MediaTypeId = media_types.MediaTypeId
+LEFT JOIN genres ON tracks.GenreId = genres.GenreId; 
+
+--Show the total sales made by each sales agent.--
+SELECT SUM(invoices.Total), customers.SupportRepId, employees.FirstName, employees.LastName
+FROM invoices
+LEFT JOIN customers ON invoices.CustomerId = customers.CustomerId
+LEFT JOIN employees ON customers.SupportRepId = employees.EmployeeId
+GROUP BY customers.SupportRepId
+ORDER BY SUM(invoices.Total) DESC;
+
+--Which sales agent made the most in sales in 2009?--
+SELECT SUM(invoices.Total), customers.SupportRepId, employees.FirstName, employees.LastName
+FROM invoices
+LEFT JOIN customers ON invoices.CustomerId = customers.CustomerId
+LEFT JOIN employees ON customers.SupportRepId = employees.EmployeeId
+WHERE invoices.InvoiceDate BETWEEN '2009-01-01' AND '2009-12-31'
+GROUP BY customers.SupportRepId
+ORDER BY SUM(invoices.Total) DESC LIMIT 1;
+
+--Which 5 countries have made the most purchases?--
+SELECT COUNT(*), BillingCountry
+FROM invoices
+GROUP BY BillingCountry
+ORDER BY COUNT(*) DESC LIMIT 5;
+
+--List the top 5 countries that have spent the most--
+SELECT SUM(invoices.Total), BillingCountry
+FROM invoices
+GROUP BY BillingCountry
+ORDER BY SUM(invoices.Total) DESC LIMIT 5;
+
+--Find all the cities in the USA that customers have made purchases from--
+SELECT BillingCity FROM invoices
+WHERE BillingCountry LIKE 'USA'; 
+
+--How many purchases were made from WA state?--
+SELECT COUNT(*) FROM invoices
+WHERE BillingState = 'WA';
+
+--Count how many purchases each customer made (in descending order)--
+SELECT COUNT(*), customers.CustomerId
+FROM customers
+LEFT JOIN invoices ON customers.CustomerId = invoices.CustomerId
+GROUP BY customers.CustomerId
+ORDER BY COUNT(*) DESC; 
+
+--Count how many purchases each customer made during 2010 (in descending order)--
+SELECT COUNT(*), customers.CustomerId
+FROM customers
+LEFT JOIN invoices ON customers.CustomerId = invoices.CustomerId
+WHERE invoices.InvoiceDate BETWEEN '2010-01-01' AND '2010-12-31'
+GROUP BY customers.CustomerId
+ORDER BY COUNT(*) DESC; 
+
+--Find the names of the longest and shortest songs from the Tracks table--
+SELECT tracks.Name, MAX(Milliseconds) FROM tracks;
+
+SELECT Milliseconds FROM tracks
+WHERE Name = 'Occupation / Precipice';
+
+SELECT Name, MIN(Milliseconds) FROM tracks;
+
+SELECT Milliseconds FROM tracks
+WHERE Name = 'É Uma Partida De Futebol';
+
+--How many tracks did Queen release?--
+SELECT COUNT(*) FROM tracks
+WHERE Composer = 'Queen';
+
+--Find the names of the Tracks purchased by Invoice ID number 44--
+SELECT tracks.Name, tracks.TrackId
+FROM tracks
+LEFT JOIN invoice_items ON tracks.TrackId = invoice_items.TrackId
+WHERE invoice_items.InvoiceId = '44'; 
