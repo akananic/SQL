@@ -76,3 +76,19 @@ SELECT COUNT(*),
     END AS Average_Walks
 FROM astronauts
 GROUP BY Average_Walks;
+
+--How many missions are there?--
+SELECT COUNT(distinct Missions) as Number_of_missions FROM astronauts;
+
+--How many death missions are there?--
+SELECT COUNT(distinct Death_Mission) AS number_of_death_missions FROM astronauts;
+
+--Query all information for missions where a death occured--
+SELECT * FROM astronauts WHERE Death_Mission IS NOT NULL; 
+
+--What are the names and genders of the astronauts that died on a death_mission? Order names alphabetically.--
+SELECT name, gender FROM astronauts WHERE Death_Mission IS NOT NULL ORDER BY name;
+
+--Find the number of men and women that died on a mission and order by greatest number of deaths by gender.--
+SELECT COUNT(name), gender FROM astronauts WHERE Death_Mission IS NOT NULL
+GROUP BY gender ORDER BY COUNT(name) DESC;
