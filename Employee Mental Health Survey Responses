@@ -1,0 +1,73 @@
+-- Hello and welcome. Below you will find a series of queries that I used to analyze data and responses that participants gave to a Mental Health Survey conducted in 2014 and from 2016-2019--
+
+--Find participant #1's responses to all the questions they answered - be sure to include the question posed to them--
+SELECT Answer.AnswerText, Question.questiontext FROM Answer
+LEFT JOIN Question ON Answer.QuestionID = Question.questionid
+WHERE Answer.UserID IN (1);
+
+--What were the different responses people gave to question 1? Calculate the number of resposnes for each possible response--
+SELECT Question.questiontext, Answer.AnswerText, COUNT(*) FROM Answer
+LEFT JOIN Question ON Answer.QuestionID = Question.questionid
+WHERE Answer.QuestionID = 96
+GROUP BY Answer.AnswerText;
+
+--Sum the total number of responses for each survey question--
+SELECT Answer.QuestionID, COUNT(Answer.AnswerText) FROM Answer
+LEFT JOIN Survey ON Answer.SurveyID = Survey.SurveyID
+GROUP BY Answer.QuestionID;
+
+--Average age of participants for each Survey year--
+SELECT Answer.SurveyID, AVG(Answer.AnswerText) FROM Answer
+WHERE Answer.QuestionID = 1
+GROUP BY SurveyID;
+
+--How many respondents were there from each state for all surveys?--
+SELECT Answer.AnswerText, COUNT(*) FROM Answer
+WHERE Answer.QuestionID = 4 AND Answer.AnswerText <> -1
+GROUP BY Answer.AnswerText
+ORDER BY 2 DESC;
+
+--How many respondents were there from each state for the 2019 survey?--
+SELECT Answer.AnswerText, COUNT(*) FROM Answer
+WHERE Answer.QuestionID = 4 AND Answer.AnswerText <> -1 AND Answer.SurveyID = 2019
+GROUP BY Answer.AnswerText
+ORDER BY 2 DESC;
+
+--How many respondents were there from each state for the 2018 survey?--
+SELECT Answer.AnswerText, COUNT(*) FROM Answer
+WHERE Answer.QuestionID = 4 AND Answer.AnswerText <> -1 AND Answer.SurveyID = 2018
+GROUP BY Answer.AnswerText
+ORDER BY 2 DESC;
+
+--How many respondents were there from each state for the 2017 survey?--
+SELECT Answer.AnswerText, COUNT(*) FROM Answer
+WHERE Answer.QuestionID = 4 AND Answer.AnswerText <> -1 AND Answer.SurveyID = 2017
+GROUP BY Answer.AnswerText
+ORDER BY 2 DESC;
+
+--How many respondents were there from each state for the 2016 survey?--
+SELECT Answer.AnswerText, COUNT(*) FROM Answer
+WHERE Answer.QuestionID = 4 AND Answer.AnswerText <> -1 AND Answer.SurveyID = 2016
+GROUP BY Answer.AnswerText
+ORDER BY 2 DESC;
+
+--How many respondents were there from each state for the 2014 survey?--
+SELECT Answer.AnswerText, COUNT(*) FROM Answer
+WHERE Answer.QuestionID = 4 AND Answer.AnswerText <> -1 AND Answer.SurveyID = 2014
+GROUP BY Answer.AnswerText
+ORDER BY 2 DESC;
+
+--For each survey year, identify the different responses participants gave regarding their employer's mental health coverage and calculate how many cases there were for each response type--
+SELECT Answer.SurveyID, Answer.AnswerText, COUNT(*) FROM Answer
+WHERE Answer.QuestionID = 10
+GROUP BY Answer.SurveyID, Answer.AnswerText
+ORDER BY Answer.SurveyID, COUNT(*) DESC;
+
+--What were the racial demographics? Include all surveys--
+SELECT Answer.AnswerText, COUNT(*) FROM Answer
+WHERE Answer.QuestionID = 89
+GROUP BY Answer.AnswerText
+ORDER BY 2 DESC;
+
+--How many participants took our surveys? Include all years--
+SELECT distinct COUNT(Answer.UserID) FROM Answer;
